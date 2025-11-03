@@ -166,6 +166,10 @@
 	/delete-property/ max-frequency;
 };
 
+&ethmac {
+	mc_val = <0x1621>;
+};
+
 &aml_wifi {
 	status = "okay";
 	wifi_static_buf = <1>;
