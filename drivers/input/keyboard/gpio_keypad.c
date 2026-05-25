@@ -516,3 +516,10 @@ void __exit meson_gpio_kp_exit(void)
 {
 	platform_driver_unregister(&meson_gpio_kp_driver);
 }
+
+module_init(meson_gpio_kp_init);
+module_exit(meson_gpio_kp_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Amlogic");
+MODULE_DESCRIPTION("Amlogic GPIO Keypad Driver");
