@@ -1,0 +1,181 @@
+#include "s7d_s905a_bm221.dts"
+#include "coreelec_s7d_common.dtsi"
+
+/{
+	model = "Amlogic";
+	coreelec-dt-id = "s7d_s905a_x96_m200_2g";
+
+    /delete-node/ gpio_leds;
+	gpio_leds {
+		compatible = "gpio-leds";
+		status = "okay";
+		pwr_led {
+			label = "pwr_led";
+			gpios = <&gpio GPIODV_5 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+	};
+
+    /delete-node/ auge_sound;
+	auge_sound {
+		compatible = "amlogic, auge-sound-card";
+		aml-audio-card,name = "AML-AUGESOUND";
+
+		/*avout mute gpio*/
+		avout_mute-gpios = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
+		av_mute_sleep_time = <700>;
+		aml-audio-card,dai-link@0 {
+			format = "dsp_b";
+			mclk-fs = <512>;
+			/* master mode */
+			bitclock-master = <&tdma>;
+			frame-master = <&tdma>;
+			suffix-name = "alsaPORT-pcm";
+			tdmacpu: cpu {
+				sound-dai = <&tdma>;
+				dai-tdm-slot-tx-mask =
+							<1>;
+				dai-tdm-slot-rx-mask =
+							<1>;
+				dai-tdm-slot-num = <2>;
+				dai-tdm-slot-width = <16>;
+				system-clock-frequency = <256000>;
+			};
+			tdmacodec: codec {
+				sound-dai = <&dummy_codec>;
+			};
+		};
+
+		aml-audio-card,dai-link@1 {
+			format = "i2s";
+			mclk-fs = <256>;
+			continuous-clock;
+			/* master mode */
+			bitclock-master = <&tdmb>;
+			frame-master = <&tdmb>;
+			suffix-name = "alsaPORT-i2s2hdmi";
+			cpu {
+				sound-dai = <&tdmb>;
+				dai-tdm-slot-tx-mask = <1 1>;
+				dai-tdm-slot-rx-mask = <1 1>;
+				dai-tdm-slot-num = <2>;
+				dai-tdm-slot-width = <32>;
+				system-clock-frequency = <12288000>;
+			};
+			tdmbcodec: codec {
+				sound-dai = <&dummy_codec>;
+			};
+		};
+
+		aml-audio-card,dai-link@2 {
+			format = "i2s";
+			mclk-fs = <256>;
+			/* master mode */
+			bitclock-master = <&tdmc>;
+			frame-master = <&tdmc>;
+			/* suffix-name, sync with android audio hal used for */
+			suffix-name = "alsaPORT-i2s";
+			cpu {
+				sound-dai = <&tdmc>;
+				dai-tdm-slot-tx-mask = <1 1>;
+				dai-tdm-slot-rx-mask = <1 1>;
+				dai-tdm-slot-num = <2>;
+				dai-tdm-slot-width = <32>;
+				system-clock-frequency = <12288000>;
+			};
+			tdmccodec: codec {
+				sound-dai = <&amlogic_codec>;
+			};
+		};
+
+		aml-audio-card,dai-link@3 {
+			mclk-fs = <64>;
+			/* suffix-name, sync with android audio hal
+			 * what's the dai link used for
+			 */
+			suffix-name = "alsaPORT-pdm-builtinmic";
+			cpu {
+				sound-dai = <&pdma>;
+			};
+			codec {
+				sound-dai = <&dummy_codec>;
+			};
+		};
+
+		aml-audio-card,dai-link@4 {
+			mclk-fs = <128>;
+			continuous-clock;
+			/* suffix-name, sync with android audio hal used for */
+			suffix-name = "alsaPORT-spdif";
+			cpu {
+				sound-dai = <&spdifa>;
+				system-clock-frequency = <6144000>;
+			};
+			codec {
+				sound-dai = <&dummy_codec>;
+			};
+		};
+		/* spdif_b to hdmi, only playback */
+		aml-audio-card,dai-link@5 {
+			mclk-fs = <128>;
+			continuous-clock;
+			/* suffix-name, sync with android audio hal
+			 * what's the dai link used for
+			 */
+			suffix-name = "alsaPORT-spdifb";
+			cpu {
+				sound-dai = <&spdifb>;
+				system-clock-frequency = <6144000>;
+			};
+			codec {
+				sound-dai = <&dummy_codec>;
+			};
+		};
+
+		aml-audio-card,dai-link@6 {
+			mclk-fs = <256>;
+			continuous-clock;
+			suffix-name = "alsaPORT-loopback";
+			cpu {
+				sound-dai = <&loopbacka>;
+				system-clock-frequency = <12288000>;
+			};
+			codec {
+				sound-dai = <&dummy_codec>;
+			};
+		};
+	};
+
+	adc_keypad {
+	    status = "disabled";
+	};
+
+	gpio_keypad {
+		compatible = "amlogic, gpio_keypad";
+		status = "okay";
+		scan_period = <20>;
+		key_num = <1>;
+		key_name = "power";
+		key_code = <116>;
+		key_type = <EV_KEY>;
+		key-gpios = <&gpio GPIOD_2 GPIO_ACTIVE_HIGH>;
+		/* 0:polling mode, 1:irq mode */
+		detect_mode = <0>;
+	};
+
+	vcc5v_reg: fixed@vcc5v_reg {
+		regulator-always-on;
+	};
+};
+
+&i2c1 {
+	status = "disabled";
+};
+
+&i2c3 {
+	status = "disabled";
+};
+
+&sd_emmc_a {
+	max-frequency = <150000000>;
+};

@@ -1,0 +1,37 @@
+#include "s7d_s905a_x96_m200_2g.dts"
+
+/{
+	coreelec-dt-id = "s7d_s905a_x96_m200_2g_1gbit";
+};
+
+&periphs_pinctrl {
+
+	&eth_phy {
+		/delete-node/ mdio@1;
+	};
+
+	&ext_mdio {
+		external_phy: ethernet-phy@0 {
+			reg = <0>;
+			max-speed = <1000>;
+
+			reset-assert-us = <20000>;
+			reset-deassert-us = <50000>;
+		};
+	};
+
+	&ethmac {
+		status = "okay";
+		pinctrl-0 = <&eth_pins>, <&eth_rgmii_pins>;
+		pinctrl-names = "default";
+		phy-mode = "rgmii";
+		phy-handle = <&external_phy>;
+		amlogic,tx-delay-ns = <2>;
+		mc_val = <0x1621>;
+		cali_val = <0x80000>;
+		// 1:inphy; 2:exphy;
+		internal_phy = <2>;
+		wol = <1>;
+		mdns_wkup = <1>;
+	};
+};

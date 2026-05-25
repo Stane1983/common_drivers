@@ -1,0 +1,10 @@
+#include "s7d_s905a_x96_m200_2g.dts"
+
+/{
+	model = "Amlogic";
+	coreelec-dt-id = "s7d_s905a_x96_m200_4g";
+
+	memory@00000000 {
+		linux,usable-memory = <0x0 0x0 0x0 0xf0000000>;
+	};
+};
