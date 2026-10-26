@@ -229,12 +229,13 @@ static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 			}
 		}
 
-#ifdef CONFIG_AMLOGIC_MODIFY
-	if (meson->data->extern_clk) {
-		return 0;
-	}
-#endif
-
+	/*
+	 * Also for extern_clk (meson-v2-pwm) chips: meson_pwm_enable() sets the
+	 * gate bit in CLKCTRL_PWM_CLK_xx_CTRL directly, but unless the clock
+	 * framework holds a reference too, clk_disable_unused() gates the
+	 * channel clock again at late_initcall and the PWM output stops
+	 * (e.g. the 32.768 kHz wifi LPO clock on SC2/S4).
+	 */
 	err = clk_prepare_enable(channel->clk);
 	if (err < 0) {
 		dev_err(dev, "failed to enable clock %s: %d\n",
@@ -254,10 +255,7 @@ static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
 	struct meson_pwm *meson = to_meson_pwm(chip);
 	struct meson_pwm_channel *channel = &meson->channels[pwm->hwpwm];
 
-	if (meson->data->extern_clk)
-		return;
-	if (channel)
-		clk_disable_unprepare(channel->clk);
+	clk_disable_unprepare(channel->clk);
 
 }
 
