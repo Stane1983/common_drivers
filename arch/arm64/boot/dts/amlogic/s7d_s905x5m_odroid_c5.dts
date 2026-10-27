@@ -51,6 +51,10 @@
   };
 };
 
+&logo_reserved {
+	reg = <0x0 0x7f800000 0x0 0x800000>;
+};
+
 &periphs_pinctrl {
 	pwm_a_gpio_x6: pwm_a_gpio_x6 {
 		mux {
