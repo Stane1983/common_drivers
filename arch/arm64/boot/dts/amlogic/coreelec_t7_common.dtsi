@@ -459,3 +459,7 @@
 	/delete-property/ phy-reg-size;
 	phys = <&u2p0port0>;
 };
+
+&logo_reserved {
+	reg = <0x0 0x7f800000 0x0 0x800000>;
+};
