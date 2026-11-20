@@ -4,6 +4,10 @@
 	coreelec-dt-id = "sc2_s905x4_x96_x4_2g_1gbit";
 };
 
+&i2c2 {
+	status = "disabled";	/* GPIOZ_14/15: GPIOZ_15 is the JL2101 nRESET on X96 X4 */
+};
+
 &periphs_pinctrl {
 	eth_pins: eth {
 		mux {
